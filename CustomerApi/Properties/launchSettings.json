@@ -1,27 +1,25 @@
-{
-  "$schema": "http://json.schemastore.org/launchsettings.json",
+﻿{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:17960",
-      "sslPort": 44393
+      "applicationUrl": "http://localhost:51823",
+      "sslPort": 44399
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "orders",
+      "launchUrl": "customers",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "OrderApi": {
+    "Customer": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "orders",
-      "applicationUrl": "https://localhost:5003;http://localhost:5002",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

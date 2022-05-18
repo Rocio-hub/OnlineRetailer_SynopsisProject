@@ -1,6 +1,7 @@
-﻿namespace ProductApi.Models
+﻿using System;
+namespace OrderApi.Models
 {
-    public class Product
+    public class BEProduct
     {
         public int Id { get; set; }
         public string Name { get; set; }

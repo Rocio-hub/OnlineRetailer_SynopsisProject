@@ -6,7 +6,7 @@ using System;
 
 namespace OrderApi.Data
 {
-    public class OrderRepository : IRepository<Order>
+    public class OrderRepository : IRepository<BEOrder>
     {
         private readonly OrderApiContext db;
 
@@ -15,7 +15,7 @@ namespace OrderApi.Data
             db = context;
         }
 
-        Order IRepository<Order>.Add(Order entity)
+        BEOrder IRepository<BEOrder>.Add(BEOrder entity)
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
@@ -25,23 +25,23 @@ namespace OrderApi.Data
             return newOrder;
         }
 
-        void IRepository<Order>.Edit(Order entity)
+        void IRepository<BEOrder>.Edit(BEOrder entity)
         {
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
         }
 
-        Order IRepository<Order>.Get(int id)
+        BEOrder IRepository<BEOrder>.Get(int id)
         {
             return db.Orders.FirstOrDefault(o => o.Id == id);
         }
 
-        IEnumerable<Order> IRepository<Order>.GetAll()
+        IEnumerable<BEOrder> IRepository<BEOrder>.GetAll()
         {
             return db.Orders.ToList();
         }
 
-        void IRepository<Order>.Remove(int id)
+        void IRepository<BEOrder>.Remove(int id)
         {
             var order = db.Orders.FirstOrDefault(p => p.Id == id);
             db.Orders.Remove(order);

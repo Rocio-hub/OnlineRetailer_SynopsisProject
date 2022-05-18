@@ -9,18 +9,19 @@ namespace OrderApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+
     public class OrdersController : ControllerBase
     {
-        private readonly IRepository<Order> repository;
+        private readonly IRepository<BEOrder> repository;
 
-        public OrdersController(IRepository<Order> repos)
+        public OrdersController(IRepository<BEOrder> repos)
         {
             repository = repos;
         }
 
         // GET: orders
         [HttpGet]
-        public IEnumerable<Order> Get()
+        public IEnumerable<BEOrder> Get()
         {
             return repository.GetAll();
         }
@@ -38,41 +39,63 @@ namespace OrderApi.Controllers
         }
 
         // POST orders
-        [HttpPost]
-        public IActionResult Post([FromBody]Order order)
+       [HttpPost]
+        public IActionResult Post([FromBody]BEOrder order)
         {
             if (order == null)
             {
                 return BadRequest();
             }
-
-            // Call ProductApi to get the product ordered
+            
             RestClient c = new RestClient();
-            // You may need to change the port number in the BaseUrl below
-            // before you can run the request.
-            c.BaseUrl = new Uri("https://localhost:5001/products/");
-            var request = new RestRequest(order.ProductId.ToString(), Method.GET);
-            var response = c.Execute<Product>(request);
+            RestClient c2 = new RestClient();
+          
+            var productCheck = false;
+            var customerCheck = false;
+            var totalprice = 0.0;
+
+            // Call ProductApi to get the product ordered and the customer
+            c.BaseUrl = new Uri("https://localhost:5001/products/"+order.ProductId);
+            c2.BaseUrl = new Uri("https://localhost:44399/customers/"+order.CustomerId);
+
+            var request = new RestRequest(Method.GET);
+            var request2 = new RestRequest(Method.GET);
+
+            var response = c.Execute<BEProduct>(request);
+            var response2 = c2.Execute<BECustomer>(request2);
+
             var orderedProduct = response.Data;
+            var customerOrdering = response2.Data;
 
             if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
-            {
-                // reduce the number of items in stock for the ordered product,
-                // and create a new order.
-                orderedProduct.ItemsReserved += order.Quantity;
-                var updateRequest = new RestRequest(orderedProduct.Id.ToString(), Method.PUT);
-                updateRequest.AddJsonBody(orderedProduct);
-                var updateResponse = c.Execute(updateRequest);
+                productCheck = true;
 
-                if (updateResponse.IsSuccessful)
+            if (customerOrdering.CreditStanding >= totalprice)
+                customerCheck = true;
+
+            if (customerCheck == productCheck == true)
+            {
+                orderedProduct.ItemsReserved += order.Quantity;
+                var updateRequestProduct = new RestRequest("https://localhost:5001/products/" + orderedProduct.Id.ToString(), Method.PUT);
+                updateRequestProduct.AddJsonBody(orderedProduct);
+                var updateResponseProduct = c.Execute(updateRequestProduct);
+                totalprice = (double)(orderedProduct.Price * order.Quantity);
+
+                customerOrdering.CreditStanding -= totalprice;
+                var updateRequestCustomer = new RestRequest("https://localhost:44399/customers/" + customerOrdering.Id.ToString(), Method.PUT);
+                updateRequestCustomer.AddJsonBody(customerOrdering);
+                var updateResponseCustomer = c2.Execute(updateRequestCustomer);
+
+                if(updateResponseProduct.IsSuccessful && updateResponseCustomer.IsSuccessful)
                 {
                     var newOrder = repository.Add(order);
                     return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
                 }
+
             }
 
-            // If the order could not be created, "return no content".
-            return NoContent();
+                // If the order could not be created, "return no content".
+                return NoContent();
         }
 
     }

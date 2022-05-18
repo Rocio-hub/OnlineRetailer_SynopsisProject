@@ -9,16 +9,16 @@ namespace ProductApi.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly IRepository<Product> repository;
+        private readonly IRepository<BEProduct> repository;
 
-        public ProductsController(IRepository<Product> repos)
+        public ProductsController(IRepository<BEProduct> repos)
         {
             repository = repos;
         }
 
         // GET products
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public IEnumerable<BEProduct> Get()
         {
             return repository.GetAll();
         }
@@ -37,7 +37,7 @@ namespace ProductApi.Controllers
 
         // POST products
         [HttpPost]
-        public IActionResult Post([FromBody]Product product)
+        public IActionResult Post([FromBody]BEProduct product)
         {
             if (product == null)
             {
@@ -51,7 +51,7 @@ namespace ProductApi.Controllers
 
         // PUT products/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]Product product)
+        public IActionResult Put(int id, [FromBody]BEProduct product)
         {
             if (product == null || product.Id != id)
             {

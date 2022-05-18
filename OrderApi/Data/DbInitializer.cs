@@ -13,18 +13,12 @@ namespace OrderApi.Data
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            // Look for any Products
-            if (context.Orders.Any())
-            {
-                return;   // DB has been seeded
-            }
+            BEOrder order = new BEOrder();
+            order.Date = DateTime.Now;
+            order.ProductId = 4;
+            order.Quantity = 3;
+            context.Add(order);
 
-            List<Order> orders = new List<Order>
-            {
-                new Order { Date = DateTime.Today, ProductId = 1, Quantity = 2 }
-            };
-
-            context.Orders.AddRange(orders);
             context.SaveChanges();
         }
     }

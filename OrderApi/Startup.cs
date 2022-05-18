@@ -25,7 +25,7 @@ namespace OrderApi
             services.AddDbContext<OrderApiContext>(opt => opt.UseInMemoryDatabase("OrdersDb"));
 
             // Register repositories for dependency injection
-            services.AddScoped<IRepository<Order>, OrderRepository>();
+            services.AddScoped<IRepository<BEOrder>, OrderRepository>();
 
             // Register database initializer for dependency injection
             services.AddTransient<IDbInitializer, DbInitializer>();
@@ -51,7 +51,7 @@ namespace OrderApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
